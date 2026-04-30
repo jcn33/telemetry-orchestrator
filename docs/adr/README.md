@@ -9,6 +9,7 @@ Each ADR also contains an **AI Coding Directives** section. When an ADR is accep
 | ID | Title | Status | Tags |
 | :--- | :--- | :--- | :--- |
 | [ADR-001](001-ec2-instance-sizing.md) | EC2 Instance Sizing and Security Model | Accepted | `infra`, `security`, `ec2` |
+| [ADR-002](002-local-service-topology.md) | Local Service Topology and Port Exposure | Accepted | `infra`, `docker`, `security`, `networking` |
 
 ---
 

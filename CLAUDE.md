@@ -13,7 +13,7 @@ This is a portfolio project targeting aerospace/systems engineering roles. Code 
 ```
 Remote EC2 (Docker Compose)
 ├── api/          FastAPI — LangGraph orchestration, HTTP endpoints
-├── frontend/     React — visualization and HITL review UI
+├── ui/           React (Vite) — visualization and HITL review UI
 └── db/           PostgreSQL — relational telemetry storage
 
 External Managed Services
@@ -33,6 +33,12 @@ These directives are compiled from accepted ADRs in `docs/adr/`. When a new ADR 
 - **DIRECTIVE:** Target environment is a remote EC2 `t3.xlarge` in `us-west-2`. Do not write code that assumes local execution for data-intensive operations.
 - **DIRECTIVE:** All service access (React frontend, FastAPI) is via VS Code SSH port forwarding. Do not add public ingress rules for application ports.
 - **DIRECTIVE:** Qdrant is a managed cloud service (`QDRANT_URL` env var). Never reference a localhost Qdrant endpoint.
+
+<!-- ADR-002: Local Service Topology and Port Exposure -->
+- **DIRECTIVE:** All container host-port bindings in `docker-compose.yml` MUST use the `127.0.0.1:<host>:<container>` form. Never bind to `0.0.0.0` or omit the interface.
+- **DIRECTIVE:** Inter-service calls inside the compose network MUST use the compose service name (`db`, `api`, `ui`), never `localhost` or `127.0.0.1`.
+- **DIRECTIVE:** Code running inside a compose container reads `DATABASE_URL`. Code running on the EC2 host (MCP servers, scripts) reads `DATABASE_URL_LOCAL`. Do not cross these.
+- **DIRECTIVE:** When adding a new compose service, follow the established pattern: `127.0.0.1` host binding, named volume for any persistent state, healthcheck if downstream services depend on it.
 
 ---
 
