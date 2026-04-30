@@ -55,8 +55,11 @@ echo "  -> Python 3.11 installed"
 echo "[4/7] Installing Node.js 20 LTS..."
 curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
 apt-get install -yq nodejs
-# Now safe to switch python3 default — NodeSource is done with apt
+# Now safe to switch python3 default — NodeSource is done with apt.
+# --install only registers 3.11 as an alternative; without --set the
+# /etc/alternatives/python3 symlink stays on the system 3.10. Force it.
 update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.11 1
+update-alternatives --set python3 /usr/bin/python3.11
 echo "  -> $(node --version)"
 echo "  -> npm $(npm --version)"
 echo "  -> $(python3 --version)"
