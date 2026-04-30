@@ -1,0 +1,32 @@
+[project]
+name = "telemetry-orchestrator"
+version = "0.0.0"
+description = "AI-assisted anomaly detection pipeline for high-frequency aerospace telemetry."
+requires-python = ">=3.11"
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+extend-exclude = ["data", "ui", ".venv"]
+
+[tool.ruff.lint]
+select = [
+  "E", "F", "W",   # pycodestyle + pyflakes
+  "I",             # isort
+  "B",             # flake8-bugbear
+  "UP",            # pyupgrade
+  "ANN",           # flake8-annotations — enforces type hints (per CLAUDE.md)
+  "SIM",           # flake8-simplify
+]
+ignore = [
+  "ANN401",  # allow typing.Any where genuinely needed
+]
+
+[tool.ruff.lint.per-file-ignores]
+"**/tests/**" = ["ANN"]  # tests don't need full type annotations
+
+[tool.pytest.ini_options]
+minversion = "8.0"
+testpaths = ["api/tests"]
+pythonpath = ["api"]
+addopts = "-ra -q"
