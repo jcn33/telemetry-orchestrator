@@ -1,7 +1,7 @@
 #!/bin/bash
 # infra/launch_ec2.sh
 # Provisions the telemetry-orchestrator dev server on AWS EC2.
-# Usage: KEY_NAME=my-key-pair ./infra/launch_ec2.sh
+# Usage: KEY_NAME=telemetry-dev ./infra/launch_ec2.sh
 
 set -euo pipefail
 
@@ -12,10 +12,13 @@ REGION="us-west-2"
 SECURITY_GROUP="telemetry-sg"
 VOLUME_SIZE=30
 
+# AWS profile — reads AWS_PROFILE env var, falls back to telemetry-dev
+export AWS_PROFILE="${AWS_PROFILE:-telemetry-dev}"
+
 # Require key pair name
 if [[ -z "${KEY_NAME:-}" ]]; then
   echo "ERROR: KEY_NAME environment variable is required."
-  echo "Usage: KEY_NAME=my-key-pair ./infra/launch_ec2.sh"
+  echo "Usage: KEY_NAME=telemetry-dev ./infra/launch_ec2.sh"
   exit 1
 fi
 
@@ -34,20 +37,24 @@ AMI_ID=$(aws ssm get-parameter \
 echo "  -> Using AMI: $AMI_ID"
 
 # ── Security Group ────────────────────────────────────────────────────────────
-echo "Creating security group '$SECURITY_GROUP'..."
-SG_ID=$(aws ec2 create-security-group \
+echo "Checking for security group '$SECURITY_GROUP'..."
+SG_ID=$(aws ec2 describe-security-groups \
   --region "$REGION" \
-  --group-name "$SECURITY_GROUP" \
-  --description "telemetry-orchestrator dev server — SSH only" \
-  --query 'GroupId' \
-  --output text 2>/dev/null) || {
-    echo "  -> Security group already exists, fetching ID..."
-    SG_ID=$(aws ec2 describe-security-groups \
-      --region "$REGION" \
-      --group-names "$SECURITY_GROUP" \
-      --query 'SecurityGroups[0].GroupId' \
-      --output text)
-  }
+  --filters "Name=group-name,Values=$SECURITY_GROUP" \
+  --query 'SecurityGroups[0].GroupId' \
+  --output text)
+
+if [[ -z "$SG_ID" || "$SG_ID" == "None" ]]; then
+  echo "  -> Not found, creating..."
+  SG_ID=$(aws ec2 create-security-group \
+    --region "$REGION" \
+    --group-name "$SECURITY_GROUP" \
+    --description "telemetry-orchestrator dev server - SSH only" \
+    --query 'GroupId' \
+    --output text)
+else
+  echo "  -> Found existing security group."
+fi
 echo "  -> Security Group ID: $SG_ID"
 
 # SSH restricted to current IP only — all other access via VS Code port forwarding
