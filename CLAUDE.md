@@ -25,6 +25,17 @@ All ML inference and GPU-bound work runs in an isolated container with exclusive
 
 ---
 
+## Active Architectural Constraints
+
+These directives are compiled from accepted ADRs in `docs/adr/`. When a new ADR is accepted, its directives are added here. Do not modify this section manually — update the source ADR and re-compile.
+
+<!-- ADR-001: EC2 Instance Sizing and Security Model -->
+- **DIRECTIVE:** Target environment is a remote EC2 `t3.xlarge` in `us-west-2`. Do not write code that assumes local execution for data-intensive operations.
+- **DIRECTIVE:** All service access (Streamlit, FastAPI) is via VS Code SSH port forwarding. Do not add public ingress rules for application ports.
+- **DIRECTIVE:** Qdrant is a managed cloud service (`QDRANT_URL` env var). Never reference a localhost Qdrant endpoint.
+
+---
+
 ## Pilot / Navigator Protocol
 
 You are the **Pilot** (implementation). I am the **Navigator** (review and approval).
@@ -91,6 +102,18 @@ All transforms live in `src/signal_processing/`. They are pure functions with no
 ## Environment Variables
 
 Never commit secrets. All credentials are loaded from `.env` (gitignored). See `.env.example` for required keys.
+
+---
+
+## Documentation Convention
+
+Design decisions → `docs/adr/` (AI-optimized ADRs with YAML frontmatter and AI Coding Directives).
+Physics rationale → notebook markdown cells and function docstrings.
+Project-level overview → `README.md`.
+
+When an ADR is accepted: update the ADR, then compile its directives into the **Active Architectural Constraints** section above. Both files change in the same commit.
+
+See `docs/adr/README.md` for the template.
 
 ---
 
