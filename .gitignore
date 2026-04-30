@@ -1,0 +1,6 @@
+# .gitignore
+.env
+*.pem
+__pycache__/
+.vscode/
+data/
