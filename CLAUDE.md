@@ -2,7 +2,7 @@
 
 ## Project Purpose
 
-AI-assisted anomaly detection pipeline for high-frequency aerospace telemetry. Ingests NASA C-MAPSS sensor data, transforms it into the frequency domain via FFT/STFT, stores embeddings in Qdrant Cloud, and surfaces anomalies through a LangGraph orchestration layer with a FastAPI backend and Streamlit dashboard.
+AI-assisted anomaly detection pipeline for high-frequency aerospace telemetry.
 
 This is a portfolio project targeting aerospace/systems engineering roles. Code quality, commit discipline, and physics grounding are as important as functionality.
 
@@ -13,7 +13,7 @@ This is a portfolio project targeting aerospace/systems engineering roles. Code 
 ```
 Remote EC2 (Docker Compose)
 ├── api/          FastAPI — LangGraph orchestration, HTTP endpoints
-├── dashboard/    Streamlit — visualization and HITL review UI
+├── frontend/     React — visualization and HITL review UI
 └── db/           PostgreSQL — relational telemetry storage
 
 External Managed Services
@@ -31,7 +31,7 @@ These directives are compiled from accepted ADRs in `docs/adr/`. When a new ADR 
 
 <!-- ADR-001: EC2 Instance Sizing and Security Model -->
 - **DIRECTIVE:** Target environment is a remote EC2 `t3.xlarge` in `us-west-2`. Do not write code that assumes local execution for data-intensive operations.
-- **DIRECTIVE:** All service access (Streamlit, FastAPI) is via VS Code SSH port forwarding. Do not add public ingress rules for application ports.
+- **DIRECTIVE:** All service access (React frontend, FastAPI) is via VS Code SSH port forwarding. Do not add public ingress rules for application ports.
 - **DIRECTIVE:** Qdrant is a managed cloud service (`QDRANT_URL` env var). Never reference a localhost Qdrant endpoint.
 
 ---
@@ -65,18 +65,7 @@ docs(readme): add system architecture and deployment guide
 chore(infra): add EC2 bootstrap script and docker-compose scaffold
 ```
 
-Scope options: `telemetry`, `signal`, `agents`, `retrieval`, `api`, `dashboard`, `infra`, `docs`
-
----
-
-## Build & Test Commands
-
-```bash
-pip install -e ".[dev]"   # install with dev extras
-ruff check .              # lint — must pass before any commit
-pytest tests/             # run unit tests — must pass before any commit
-docker-compose up --build # spin up full stack
-```
+Scope options: `telemetry`, `signal`, `agents`, `retrieval`, `api`, `dashboard`, `infra`, `docs`, `adr`, `claude`
 
 ---
 
@@ -92,8 +81,6 @@ docker-compose up --build # spin up full stack
 ---
 
 ## Signal Processing Rationale
-
-Raw time-series amplitude is insufficient for identifying early-stage structural fatigue. By transforming sensor signals into the frequency domain, we isolate resonant harmonic frequencies that indicate bearing wear or compressor blade micro-fracturing before catastrophic failure.
 
 All transforms live in `src/signal_processing/`. They are pure functions with no side effects and 100% unit test coverage.
 
