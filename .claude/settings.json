@@ -1,0 +1,16 @@
+{
+    "defaultMode": "plan",
+    "model": "opus",
+    "permissions": {
+        "allow": [
+            "Bash(ls:*)",
+            "Bash(find:*)",
+            "Bash(cat:*)",
+            "Bash(git status:*)",
+            "Bash(git log:*)",
+            "Bash(git diff:*)",
+            "Bash(ruff check:*)",
+            "Bash(pytest:*)"
+        ]
+    }
+}
