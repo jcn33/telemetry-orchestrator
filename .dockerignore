@@ -1,0 +1,14 @@
+.git
+.gitignore
+.env
+*.pem
+__pycache__
+*.pyc
+.pytest_cache
+.ruff_cache
+.venv
+node_modules
+dist
+.vite
+data
+docs
