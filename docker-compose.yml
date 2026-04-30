@@ -1,0 +1,66 @@
+name: telemetry-orchestrator
+
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    # Bound to 127.0.0.1 only — host-side access (MCP server, psql, dev tooling)
+    # is permitted; public exposure is blocked. See ADR-002.
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./db/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    networks:
+      - telemetry
+
+  api:
+    build: ./api
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+    ports:
+      - "127.0.0.1:8000:8000"
+    volumes:
+      - ./api/app:/app/app
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 10s
+    networks:
+      - telemetry
+
+  ui:
+    build: ./ui
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:3000:3000"
+    volumes:
+      - ./ui:/app
+      - ui_node_modules:/app/node_modules
+    depends_on:
+      - api
+    networks:
+      - telemetry
+
+volumes:
+  pgdata:
+  ui_node_modules:
+
+networks:
+  telemetry:
+    driver: bridge

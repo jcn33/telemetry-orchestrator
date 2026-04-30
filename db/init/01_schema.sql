@@ -1,0 +1,4 @@
+-- db/init/01_schema.sql
+-- Placeholder. Real telemetry schema lands with the first signal-processing feature.
+-- Postgres runs every *.sql in /docker-entrypoint-initdb.d on first boot only;
+-- to re-run after edits, drop the pgdata volume: `docker compose down -v`.
