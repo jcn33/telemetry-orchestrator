@@ -47,15 +47,19 @@ echo "[3/7] Installing Python 3.11..."
 add-apt-repository -y ppa:deadsnakes/ppa
 apt-get update -q
 apt-get install -yq python3.11 python3.11-venv python3.11-dev python3-pip
-update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.11 1
-echo "  -> $(python3 --version)"
+# update-alternatives runs AFTER Node.js — NodeSource setup script requires
+# python3 to point to the system default (3.10) or apt_pkg breaks.
+echo "  -> Python 3.11 installed"
 
 # ── Node.js 20 LTS ───────────────────────────────────────────────────────────
 echo "[4/7] Installing Node.js 20 LTS..."
 curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
 apt-get install -yq nodejs
+# Now safe to switch python3 default — NodeSource is done with apt
+update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.11 1
 echo "  -> $(node --version)"
 echo "  -> npm $(npm --version)"
+echo "  -> $(python3 --version)"
 
 # ── Claude Code CLI ───────────────────────────────────────────────────────────
 echo "[5/7] Installing Claude Code CLI..."
