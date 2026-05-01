@@ -40,6 +40,12 @@ These directives are compiled from accepted ADRs in `docs/adr/`. When a new ADR 
 - **DIRECTIVE:** Code running inside a compose container reads `DATABASE_URL`. Code running on the EC2 host (MCP servers, scripts) reads `DATABASE_URL_LOCAL`. Do not cross these.
 - **DIRECTIVE:** When adding a new compose service, follow the established pattern: `127.0.0.1` host binding, named volume for any persistent state, healthcheck if downstream services depend on it.
 
+<!-- ADR-004: Code Layering Across src/, scripts/, and api/ -->
+- **DIRECTIVE:** Library code goes in `src/<package>/`. It MUST NOT import FastAPI, psycopg, sqlalchemy, or any DB-session class.
+- **DIRECTIVE:** FastAPI route handlers and request/response schemas go in `api/app/`. They may import from `src.*`, but `src/` MUST NOT import from `api/`.
+- **DIRECTIVE:** One-shot operational CLIs (data fetchers, DB indexers) go in `scripts/`. They may import from `src.*`, but `src/` MUST NOT import from `scripts/`, and `api/app/` MUST NOT import from `scripts/`.
+- **DIRECTIVE:** When adding a new module, pick the layer first and adhere to the import rules above. If a module fits no layer, raise a new ADR rather than placing it ad hoc.
+
 ---
 
 ## Pilot / Navigator Protocol
