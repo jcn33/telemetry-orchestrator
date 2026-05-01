@@ -27,6 +27,6 @@ ignore = [
 
 [tool.pytest.ini_options]
 minversion = "8.0"
-testpaths = ["api/tests"]
-pythonpath = ["api"]
+testpaths = ["api/tests", "tests"]
+pythonpath = ["api", "src"]
 addopts = "-ra -q"
