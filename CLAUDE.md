@@ -46,6 +46,13 @@ These directives are compiled from accepted ADRs in `docs/adr/`. When a new ADR 
 - **DIRECTIVE:** One-shot operational CLIs (data fetchers, DB indexers) go in `scripts/`. They may import from `src.*`, but `src/` MUST NOT import from `scripts/`, and `api/app/` MUST NOT import from `scripts/`.
 - **DIRECTIVE:** When adding a new module, pick the layer first and adhere to the import rules above. If a module fits no layer, raise a new ADR rather than placing it ad hoc.
 
+<!-- ADR-005: Pandiyan Dataset Interpretation and Loader Design -->
+- **DIRECTIVE:** Pandiyan acquisition constants are paper-verified and not configurable. The loader MUST expose them as named module-level constants citing AddMfg 2024 §2.1 / §2.4 in docstrings: `SAMPLE_RATE_HZ = 400_000`, `WINDOW_SAMPLES = 5_000`, `HARDWARE_LOWPASS_HZ = 150_000`. Derived constants (`WINDOW_DURATION_S`, `NYQUIST_HZ`) MUST be defined in terms of the primaries, not as separate magic numbers.
+- **DIRECTIVE:** Pandiyan label values `0`/`1`/`2` map to `Label.LOF` / `Label.CONDUCTION` / `Label.KEYHOLE` per paper Table 4. Code MUST NOT introduce alternative mappings without a superseding ADR. The DB column for `label` stores the text name, not the integer.
+- **DIRECTIVE:** Telemetry loaders MUST NOT renormalize stored waveforms. Per-window std variation carries real signal-energy information that downstream RMS / kurtosis / envelope features depend on.
+- **DIRECTIVE:** Telemetry rawspace files MUST be opened with `np.load(path, mmap_mode='r')`. Casting to `np.float32` happens per accessed row via `np.asarray(arr[i], dtype=np.float32)`, never globally via `arr.astype(...)`.
+- **DIRECTIVE:** Telemetry waveform bytes never enter Postgres. Postgres holds metadata + per-window labels (text) + file pointers only.
+
 ---
 
 ## Pilot / Navigator Protocol

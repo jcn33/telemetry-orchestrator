@@ -11,6 +11,7 @@ Each ADR also contains an **AI Coding Directives** section. When an ADR is accep
 | [ADR-001](001-ec2-instance-sizing.md) | EC2 Instance Sizing and Security Model | Accepted | `infra`, `security`, `ec2` |
 | [ADR-002](002-local-service-topology.md) | Local Service Topology and Port Exposure | Accepted | `infra`, `docker`, `security`, `networking` |
 | [ADR-004](004-code-layering.md) | Code Layering Across src/, scripts/, and api/ | Accepted | `architecture`, `code-layout`, `dependencies` |
+| [ADR-005](005-pandiyan-interpretation.md) | Pandiyan Dataset Interpretation and Loader Design | Accepted | `telemetry`, `pandiyan`, `signal-processing`, `storage` |
 
 ---
 
