@@ -79,6 +79,8 @@ chore(infra): add EC2 bootstrap script and docker-compose scaffold
 
 Scope options: `telemetry`, `signal`, `agents`, `retrieval`, `api`, `dashboard`, `infra`, `docs`, `adr`, `claude`
 
+**Subject-only by default.** Add an extended body only when the diff plus any referenced ADR do not already convey the why (e.g., a subtle physics constraint, an external incident, an upstream-bug workaround). When in doubt, omit the body.
+
 ---
 
 ## Coding Conventions
@@ -101,6 +103,8 @@ All transforms live in `src/signal_processing/`. They are pure functions with no
 ## Environment Variables
 
 Never commit secrets. All credentials are loaded from `.env` (gitignored). See `.env.example` for required keys.
+
+`.env` is hard-blocked via `permissions.deny` rules in `.claude/settings.json`. The harness refuses Read/Edit/Write/Bash access to the file at the tool-call layer — do not attempt to read or modify it. Edits to `.env` are the user's job. `.env.example` is unaffected.
 
 ---
 
